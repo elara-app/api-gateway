@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: configserver:http://localhost:8000
+  profiles:
+    active: dev
