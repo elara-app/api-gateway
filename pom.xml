@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- - - - - - - - - - - - - -->
+    <!--The parent POM already defines the versions of all official Spring Boot starters.-->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.6</version>
+        <relativePath/> <!-- lookup parent from a repository -->
+    </parent>
+
+    <!-- - - - - - - - - - - - - -->
+    <groupId>com.elara.app</groupId>
+    <artifactId>api-gateway</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>api-gateway</name>
+    <description>Single, central entry point for all client requests before routing them to the appropriate backend
+        services
+    </description>
+    <url/>
+
+    <!-- - - - - - - - - - - - - -->
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit</url>
+            <distribution>repo</distribution>
+            <comments>MIT License</comments>
+        </license>
+    </licenses>
+
+    <!-- - - - - - - - - - - - - -->
+    <developers>
+        <developer>
+            <id>julianbetov</id>
+            <name>Julian Bermudez</name>
+            <email>julianbetov@gmail.com</email>
+            <url>https://github.com/julianbetov</url>
+        </developer>
+    </developers>
+
+    <!-- - - - - - - - - - - - - -->
+    <scm>
+        <connection>scm:git:https://github.com/elara-app/unit-of-measure-service</connection>
+        <developerConnection>scm:git:git@github.com:elara-app/unit-of-measure-service.git</developerConnection>
+        <url>https://github.com/elara-app/unit-of-measure-service</url>
+        <tag>main</tag>
+    </scm>
+
+    <!-- - - - - - - - - - - - - -->
+    <properties>
+        <java.version>21</java.version>
+        <spring-cloud.version>2025.0.0</spring-cloud.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- - - - - - - - - - - - - -->
+    <dependencies>
+        <!-- Compile dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gateway-server-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- - - - - - - - - - - - - -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
