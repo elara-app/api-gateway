@@ -1,3 +1,5 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/elara-app/api-gateway)
+
 # API Gateway
 
 Single entry point for client traffic in the Elara microservices platform, built with **Spring Cloud Gateway (WebFlux)**.
