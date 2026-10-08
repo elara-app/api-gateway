@@ -44,9 +44,9 @@
 
     <!-- - - - - - - - - - - - - -->
     <scm>
-        <connection>scm:git:https://github.com/elara-app/unit-of-measure-service</connection>
-        <developerConnection>scm:git:git@github.com:elara-app/unit-of-measure-service.git</developerConnection>
-        <url>https://github.com/elara-app/unit-of-measure-service</url>
+        <connection>scm:git:https://github.com/elara-app/api-gateway</connection>
+        <developerConnection>scm:git:git@github.com:elara-app/api-gateway.git</developerConnection>
+        <url>https://github.com/elara-app/api-gateway</url>
         <tag>main</tag>
     </scm>
 
