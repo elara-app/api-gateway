@@ -1,0 +1,22 @@
+name: Publish image
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: image-publish-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish image
+    permissions:
+      contents: read
+      packages: write
+    uses: elara-app/.github/.github/workflows/publish-service-image.yml@8b1499e935d66c1a53c20fe286c5a2478d6a27e7
+    with:
+      image_name: ghcr.io/elara-app/api-gateway
