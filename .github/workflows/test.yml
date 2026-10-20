@@ -1,0 +1,15 @@
+name: Test
+
+on:
+  pull_request:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    permissions:
+      contents: read
+    uses: elara-app/.github/.github/workflows/test-service.yml@8b1499e935d66c1a53c20fe286c5a2478d6a27e7
