@@ -18,7 +18,7 @@ RUN ./mvnw -B -DskipTests package \
 
 # Runtime: JRE only (java.version=21), curl for HEALTHCHECK, tzdata+TZ so LocalDateTime
 # matches Postgres, non-root user per CIS.
-FROM eclipse-temurin:21.0.12.1_1-jre
+FROM eclipse-temurin:24.0.2_12-jre
 RUN apt-get update && apt-get install -y --no-install-recommends curl tzdata \
  && rm -rf /var/lib/apt/lists/*
 ENV TZ=America/Bogota
