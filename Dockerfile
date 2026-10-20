@@ -1,7 +1,7 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.28.0
 # Elara api-gateway — multistage build (ETAPA-03/D-01)
 # Builder resolves Maven deps (cached layer), runtime is a JRE with the layered jar exploded.
-FROM maven:3.9-eclipse-temurin-21 AS builder
+FROM maven:3.9.11-eclipse-temurin-21 AS builder
 WORKDIR /build
 
 # Dependency cache layer: wrapper + pom first, so dependency resolution is cached
@@ -18,7 +18,7 @@ RUN ./mvnw -B -DskipTests package \
 
 # Runtime: JRE only (java.version=21), curl for HEALTHCHECK, tzdata+TZ so LocalDateTime
 # matches Postgres, non-root user per CIS.
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:21.0.12.1_1-jre
 RUN apt-get update && apt-get install -y --no-install-recommends curl tzdata \
  && rm -rf /var/lib/apt/lists/*
 ENV TZ=America/Bogota
