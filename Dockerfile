@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.28.0
 # Elara api-gateway — multistage build (ETAPA-03/D-01)
 # Builder resolves Maven deps (cached layer), runtime is a JRE with the layered jar exploded.
-FROM maven:3.9.16-eclipse-temurin-21 AS builder
+FROM maven:3.9-eclipse-temurin-26 AS builder
 WORKDIR /build
 
 # Dependency cache layer: wrapper + pom first, so dependency resolution is cached
