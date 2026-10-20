@@ -5,7 +5,6 @@ target/
 *.log
 .env
 .env.*
-!.env.example
 Dockerfile
 .dockerignore
 compose.yml
