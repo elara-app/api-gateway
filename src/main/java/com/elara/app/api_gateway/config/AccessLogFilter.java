@@ -23,11 +23,11 @@ import reactor.core.publisher.SignalType;
  * log. Query strings, headers and bodies are deliberately not logged, to keep
  * the line small and avoid leaking credentials or payloads.
  *
- * <p>Level policy: 5xx is always {@code ERROR}, cancellations included; 4xx,
- * cancellations, pipeline errors and completions that never set a status are
- * {@code WARN}; everything else is {@code INFO}. When the gateway fails before
- * the response is committed, the status is derived from the error
- * ({@link ErrorResponse} or 500) even if a success status was already set.
+ * <p>Level policy: 5xx is always {@code ERROR}, cancellations included; 4xx
+ * is {@code WARN}. Cancellations and errors after the response is committed
+ * are {@code WARN}. Errors before commit derive their status from the error
+ * ({@link ErrorResponse} or 500). Completions that never set a status are
+ * {@code INFO}, as is everything else.
  */
 @Component
 public class AccessLogFilter implements GlobalFilter, Ordered {
@@ -77,7 +77,7 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
         if (!committed && error instanceof ErrorResponse errorResponse) {
             return errorResponse.getStatusCode().value();
         }
-        if (status != null && (committed || status.value() >= 400)) {
+        if (status != null && (committed || status.value() >= 500)) {
             return status.value();
         }
         if (error != null) {
