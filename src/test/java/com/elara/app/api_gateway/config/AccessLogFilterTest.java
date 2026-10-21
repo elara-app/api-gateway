@@ -91,7 +91,9 @@ class AccessLogFilterTest {
         filter.filter(exchange, chainWithStatus(HttpStatus.OK)).block();
 
         assertThat(appender.list).hasSize(1);
-        assertThat(appender.list.getFirst().getLevel()).isEqualTo(Level.INFO);
+        ILoggingEvent event = appender.list.getFirst();
+        assertThat(event.getLevel()).isEqualTo(Level.INFO);
+        assertThat(event.getFormattedMessage()).contains("/actuator-admin");
     }
 
     @Test
@@ -138,6 +140,67 @@ class AccessLogFilterTest {
         ILoggingEvent event = appender.list.getFirst();
         assertThat(event.getLevel()).isEqualTo(Level.WARN);
         assertThat(event.getFormattedMessage()).contains("200", "cancelled");
+    }
+
+    @Test
+    void logsErrorResponseStatusWhenAStaleSuccessStatusIsSet() {
+        MockServerWebExchange exchange = exchangeFor("/api/v1/uom/");
+
+        assertThatThrownBy(() -> filter.filter(exchange, e -> {
+            e.getResponse().setStatusCode(HttpStatus.OK);
+            return Mono.error(new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "down"));
+        }).block())
+            .isInstanceOf(ResponseStatusException.class);
+
+        assertThat(appender.list).hasSize(1);
+        ILoggingEvent event = appender.list.getFirst();
+        assertThat(event.getLevel()).isEqualTo(Level.ERROR);
+        assertThat(event.getFormattedMessage()).contains("503");
+    }
+
+    @Test
+    void logsErrorAfterCommitAtWarn() {
+        MockServerWebExchange exchange = exchangeFor("/api/v1/uom/");
+
+        assertThatThrownBy(() -> filter.filter(exchange, e -> {
+            e.getResponse().setStatusCode(HttpStatus.OK);
+            e.getResponse().setComplete().block();
+            return Mono.error(new IllegalStateException("after commit"));
+        }).block())
+            .isInstanceOf(IllegalStateException.class);
+
+        assertThat(appender.list).hasSize(1);
+        ILoggingEvent event = appender.list.getFirst();
+        assertThat(event.getLevel()).isEqualTo(Level.WARN);
+        assertThat(event.getFormattedMessage()).contains("200", "failed");
+    }
+
+    @Test
+    void logsCancelledServerErrorAtError() {
+        MockServerWebExchange exchange = exchangeFor("/api/v1/uom/");
+
+        assertThatThrownBy(() -> filter.filter(exchange, e -> {
+            e.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+            return Mono.never();
+        }).block(Duration.ofMillis(50)))
+            .isInstanceOf(IllegalStateException.class);
+
+        assertThat(appender.list).hasSize(1);
+        ILoggingEvent event = appender.list.getFirst();
+        assertThat(event.getLevel()).isEqualTo(Level.ERROR);
+        assertThat(event.getFormattedMessage()).contains("500", "cancelled");
+    }
+
+    @Test
+    void logsCompletionWithoutStatusAtInfo() {
+        MockServerWebExchange exchange = exchangeFor("/api/v1/uom/");
+
+        filter.filter(exchange, e -> Mono.empty()).block();
+
+        assertThat(appender.list).hasSize(1);
+        ILoggingEvent event = appender.list.getFirst();
+        assertThat(event.getLevel()).isEqualTo(Level.INFO);
+        assertThat(event.getFormattedMessage()).contains("n/a");
     }
 
     private static MockServerWebExchange exchangeFor(String path) {
