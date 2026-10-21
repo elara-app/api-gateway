@@ -23,10 +23,11 @@ import reactor.core.publisher.SignalType;
  * log. Query strings, headers and bodies are deliberately not logged, to keep
  * the line small and avoid leaking credentials or payloads.
  *
- * <p>Level policy: 5xx is {@code ERROR}; 4xx, cancelled exchanges and errors
- * without a response status are {@code WARN}; everything else is
- * {@code INFO}. When the gateway fails before a status is committed, the
- * status is derived from the error ({@link ErrorResponse} or 500).
+ * <p>Level policy: 5xx is always {@code ERROR}, cancellations included; 4xx,
+ * cancellations, pipeline errors and completions that never set a status are
+ * {@code WARN}; everything else is {@code INFO}. When the gateway fails before
+ * the response is committed, the status is derived from the error
+ * ({@link ErrorResponse} or 500) even if a success status was already set.
  */
 @Component
 public class AccessLogFilter implements GlobalFilter, Ordered {
@@ -50,13 +51,19 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
                 long durationMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
                 int code = resolveStatusCode(exchange, failure.get());
                 String statusText = code == 0 ? "n/a" : String.valueOf(code);
+                String marker = switch (signal) {
+                    case CANCEL -> ", cancelled";
+                    case ON_ERROR -> ", failed";
+                    default -> "";
+                };
 
-                if (signal == SignalType.CANCEL) {
-                    log.warn("[access] {} {} -> {} ({} ms, cancelled)", method, path, statusText, durationMs);
-                } else if (code >= 500) {
-                    log.error("[access] {} {} -> {} ({} ms)", method, path, statusText, durationMs);
-                } else if (code >= 400 || code == 0) {
-                    log.warn("[access] {} {} -> {} ({} ms)", method, path, statusText, durationMs);
+                if (code >= 500) {
+                    log.error("[access] {} {} -> {} ({} ms{})", method, path, statusText, durationMs, marker);
+                } else if (code == 0 && signal == SignalType.ON_COMPLETE) {
+                    log.info("[access] {} {} -> n/a ({} ms)", method, path, durationMs);
+                } else if (signal == SignalType.CANCEL || signal == SignalType.ON_ERROR
+                    || code >= 400 || code == 0) {
+                    log.warn("[access] {} {} -> {} ({} ms{})", method, path, statusText, durationMs, marker);
                 } else {
                     log.info("[access] {} {} -> {} ({} ms)", method, path, statusText, durationMs);
                 }
@@ -65,13 +72,18 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
 
     private static int resolveStatusCode(ServerWebExchange exchange, Throwable error) {
         HttpStatusCode status = exchange.getResponse().getStatusCode();
-        if (status != null) {
-            return status.value();
-        }
-        if (error instanceof ErrorResponse errorResponse) {
+        boolean committed = exchange.getResponse().isCommitted();
+
+        if (!committed && error instanceof ErrorResponse errorResponse) {
             return errorResponse.getStatusCode().value();
         }
-        return error != null ? 500 : 0;
+        if (status != null && (committed || status.value() >= 400)) {
+            return status.value();
+        }
+        if (error != null) {
+            return 500;
+        }
+        return status != null ? status.value() : 0;
     }
 
     @Override
