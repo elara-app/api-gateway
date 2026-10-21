@@ -192,6 +192,22 @@ class AccessLogFilterTest {
     }
 
     @Test
+    void logsGenericErrorWithStale4xxAs500() {
+        MockServerWebExchange exchange = exchangeFor("/api/v1/uom/");
+
+        assertThatThrownBy(() -> filter.filter(exchange, e -> {
+            e.getResponse().setStatusCode(HttpStatus.NOT_FOUND);
+            return Mono.error(new IllegalStateException("boom"));
+        }).block())
+            .isInstanceOf(IllegalStateException.class);
+
+        assertThat(appender.list).hasSize(1);
+        ILoggingEvent event = appender.list.getFirst();
+        assertThat(event.getLevel()).isEqualTo(Level.ERROR);
+        assertThat(event.getFormattedMessage()).contains("500");
+    }
+
+    @Test
     void logsCompletionWithoutStatusAtInfo() {
         MockServerWebExchange exchange = exchangeFor("/api/v1/uom/");
 
