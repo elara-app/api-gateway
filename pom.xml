@@ -15,7 +15,7 @@
     <!-- - - - - - - - - - - - - -->
     <groupId>com.elara.app</groupId>
     <artifactId>api-gateway</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.3.0</version>
     <name>api-gateway</name>
     <description>Single, central entry point for all client requests before routing them to the appropriate backend
         services
@@ -35,10 +35,9 @@
     <!-- - - - - - - - - - - - - -->
     <developers>
         <developer>
-            <id>julianbetov</id>
-            <name>Julian Bermudez</name>
-            <email>julianbetov@gmail.com</email>
-            <url>https://github.com/julianbetov</url>
+            <id>andresbetov</id>
+            <name>Andres Bermudez</name>
+            <url>https://github.com/andresbetov</url>
         </developer>
     </developers>
 
