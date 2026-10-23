@@ -39,7 +39,7 @@ There are no controllers, route definitions, security configuration, CORS config
 2. The route table matches the path; `lb://` URIs are resolved through the Eureka registry.
 3. The request is proxied to the selected instance and the response streams back unchanged.
 
-Platform topology, ports, and startup order live in [infra/README.md](../infra/README.md); the property and profile matrix lives in [centralized-configuration](../centralized-configuration/README.md).
+Platform topology, ports, and startup order live in [infrastructure/README.md](https://github.com/elara-app/infrastructure#readme); the property and profile matrix lives in [centralized-configuration/README.md](https://github.com/elara-app/centralized-configuration#readme).
 
 ### Access logging
 
@@ -97,7 +97,7 @@ sh ./mvnw test
 sh ./mvnw -B clean verify -Dspring.profiles.active=test
 ```
 
-`spring-boot:run` is not a standalone quickstart: without Config Server the app starts with no routes, and with Config Server but no backend instances every proxied call returns 503. Start the full stack as described in [infra/README.md#verify-the-stack](../infra/README.md#verify-the-stack), then check the gateway-specific URLs:
+`spring-boot:run` is not a standalone quickstart: without Config Server the app starts with no routes, and with Config Server but no backend instances every proxied call returns 503. Start the full stack as described in [infrastructure/README.md](https://github.com/elara-app/infrastructure#readme), then check the gateway-specific URLs:
 
 ```bash
 curl -s http://127.0.0.1:8080/api/v1/inventory/item/ | jq '.page.totalElements'   # 10
@@ -123,7 +123,7 @@ If the stack is up but backends have not registered yet, the data calls return 5
 | Config Server missing | The `optional:` import and `fail-fast: false` let the app start anyway; no routes are loaded, so gateway paths return 404 and health still reports `UP`. The retry block does not block startup. |
 | Config loaded, no discovery or no instances | Routes match, but `lb://` resolves no instance; requests return 503 while health still reports `UP`. |
 
-Environment variables: `CONFIG_URI` (config server URL), `EUREKA_URI` (Eureka URL), `SERVER_PORT`. The `test` profile (`application-test.yml`) disables the Config Client and Eureka for tests and CI; it is not a production profile. The gateway has only a `dev` file in `centralized-configuration`; the full matrix is in [centralized-configuration](../centralized-configuration/README.md).
+Environment variables: `CONFIG_URI` (config server URL), `EUREKA_URI` (Eureka URL), `SERVER_PORT`. The `test` profile (`application-test.yml`) disables the Config Client and Eureka for tests and CI; it is not a production profile. The gateway has only a `dev` file in `centralized-configuration`; the full matrix is in [centralized-configuration/README.md](https://github.com/elara-app/centralized-configuration#readme).
 
 ## Testing and quality gates
 
@@ -169,6 +169,6 @@ CI runs `sh ./mvnw -B clean verify -Dspring.profiles.active=test` on Java 21 for
 ## Documentation
 
 - [AGENTS.md](AGENTS.md) — commands, invariants, and traps for coding agents.
-- [infra/README.md](../infra/README.md#verify-the-stack) — full-stack startup, ports, and canonical verification.
-- [centralized-configuration](../centralized-configuration/README.md) — gateway route table, profile matrix, and property ownership.
+- [infrastructure/README.md](https://github.com/elara-app/infrastructure#readme) — full-stack startup, ports, and canonical verification.
+- [centralized-configuration/README.md](https://github.com/elara-app/centralized-configuration#readme) — gateway route table, profile matrix, and property ownership.
 - Swagger UI at `http://127.0.0.1:8080/swagger-ui.html` when the stack runs.
