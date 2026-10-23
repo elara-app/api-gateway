@@ -5,9 +5,9 @@ Instructions for coding agents working on this repository.
 ## Read first
 
 - [README.md](README.md) — purpose, API/routing contract, verification steps.
-- [centralized-configuration/api-gateway-dev.yml](../centralized-configuration/api-gateway-dev.yml) — the actual route table, locator, Swagger URLs, actuator exposure, Eureka settings. It lives outside this repo; treat it as the source of truth for routing.
-- [infra/README.md](../infra/README.md#verify-the-stack) — full-stack startup, ports, and verification.
-- [infra/compose.yml](../infra/compose.yml) — how the gateway is built, configured, and health-checked.
+- [centralized-configuration/api-gateway-dev.yml](https://github.com/elara-app/centralized-configuration/blob/main/api-gateway-dev.yml) — the actual route table, locator, Swagger URLs, actuator exposure, Eureka settings. It lives outside this repo; treat it as the source of truth for routing.
+- [infrastructure/README.md](https://github.com/elara-app/infrastructure#readme) — full-stack startup, ports, and verification.
+- [infrastructure/compose.yml](https://github.com/elara-app/infrastructure/blob/main/compose.yml) — how the gateway is built, configured, and health-checked.
 
 ## Scope and boundaries
 
@@ -38,7 +38,7 @@ sh ./mvnw test -Dtest=ApiGatewayApplicationTests          # 1 context-load test
 sh ./mvnw -B clean verify -Dspring.profiles.active=test   # CI command
 ```
 
-The wrapper is mode 644: `./mvnw` fails with permission denied. Always call `sh ./mvnw`; do not make the wrapper executable or instruct `chmod +x`. Full-stack run and verify live in [infra/README.md](../infra/README.md#verify-the-stack).
+The wrapper is mode 644: `./mvnw` fails with permission denied. Always call `sh ./mvnw`; do not make the wrapper executable or instruct `chmod +x`. Full-stack run and verify live in [infrastructure/README.md](https://github.com/elara-app/infrastructure#readme).
 
 ## Repository map
 
@@ -102,7 +102,7 @@ Test expectations: 20 tests total; keep both classes green. `AccessLogFilterTest
 
 - Changing the route contract: prefixes, service IDs, `StripPrefix=3`, locator expression, or Swagger URLs. These are client-facing and span repos.
 - Adding authentication/authorization, TLS, CORS, rate limiting, retries, circuit breakers, or timeouts.
-- Editing `centralized-configuration`, `infra`, Compose, or CI workflows — cross-repo change.
+- Editing `centralized-configuration`, `infrastructure`, Compose, or CI workflows — cross-repo change.
 - Changing access-log format or levels, or adding logged fields; treat the format as a contract.
 - Adding dependencies, profiles, or actuator endpoints.
 
